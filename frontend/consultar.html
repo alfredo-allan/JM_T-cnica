@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consultar Relatórios - Sistema JM Técnica</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="assets/css/styles.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="index.html">
+                <i class="bi bi-fuel-pump me-2"></i>
+                JM Técnica
+            </a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="criar.html">
+                            <i class="bi bi-plus-circle me-1"></i>Criar Relatório
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="consultar.html">
+                            <i class="bi bi-search me-1"></i>Consultar
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="editar.html">
+                            <i class="bi bi-pencil-square me-1"></i>Editar
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="listar.html">
+                            <i class="bi bi-list-ul me-1"></i>Listar
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="imprimir.html">
+                            <i class="bi bi-printer me-1"></i>Imprimir
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="excluir.html">
+                            <i class="bi bi-trash me-1"></i>Excluir
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- View Consultar -->
+    <div class="container">
+        <div class="service-header">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h2 class="mb-0">
+                        <i class="bi bi-search me-2"></i>
+                        Consultar Relatórios
+                    </h2>
+                    <p class="mb-0 mt-2">Busque relatórios por diferentes critérios</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <!-- Filtros de Busca -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <label class="form-label">Número do Relatório</label>
+                        <input type="text" class="form-control" id="filtroNumero" placeholder="Ex: 001">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Razão Social</label>
+                        <input type="text" class="form-control" id="filtroRazaoSocial" placeholder="Nome da empresa">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">CNPJ</label>
+                        <input type="text" class="form-control" id="filtroCnpj" placeholder="00.000.000/0000-00">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Período</label>
+                        <select class="form-select" id="filtroPeriodo">
+                            <option value="">Todos</option>
+                            <option value="hoje">Hoje</option>
+                            <option value="semana">Esta semana</option>
+                            <option value="mes">Este mês</option>
+                            <option value="personalizado">Personalizado</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row mb-4" id="periodoPersonalizado" style="display: none;">
+                    <div class="col-md-6">
+                        <label class="form-label">Data Início</label>
+                        <input type="date" class="form-control" id="dataInicio">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Data Fim</label>
+                        <input type="date" class="form-control" id="dataFim">
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <label class="form-label">Tipo de Serviço</label>
+                        <div class="d-flex gap-3 flex-wrap">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="filtroPreventiva" value="preventiva">
+                                <label class="form-check-label" for="filtroPreventiva">PREVENTIVA</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="filtroCorretiva" value="corretiva">
+                                <label class="form-check-label" for="filtroCorretiva">CORRETIVA</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="filtroPendencia" value="pendencia">
+                                <label class="form-check-label" for="filtroPendencia">PENDÊNCIA</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="filtroExtra" value="extra">
+                                <label class="form-check-label" for="filtroExtra">EXTRA</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2 mb-4">
+                    <button type="button" class="btn btn-primary" onclick="buscarRelatorios()">
+                        <i class="bi bi-search me-1"></i>Buscar
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="limparFiltros()">
+                        <i class="bi bi-arrow-clockwise me-1"></i>Limpar Filtros
+                    </button>
+                </div>
+
+                <!-- Resultados -->
+                <div id="resultadosBusca">
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Use os filtros acima para buscar relatórios específicos.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/consultar.js"></script>
+</body>
+</html>

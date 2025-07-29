@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Imprimir Relatórios - Sistema JM Técnica</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="assets/css/styles.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="index.html">
+                <i class="bi bi-fuel-pump me-2"></i>
+                JM Técnica
+            </a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="criar.html">
+                            <i class="bi bi-plus-circle me-1"></i>Criar Relatório
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="consultar.html">
+                            <i class="bi bi-search me-1"></i>Consultar
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="editar.html">
+                            <i class="bi bi-pencil-square me-1"></i>Editar
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="listar.html">
+                            <i class="bi bi-list-ul me-1"></i>Listar
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="imprimir.html">
+                            <i class="bi bi-printer me-1"></i>Imprimir
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="excluir.html">
+                            <i class="bi bi-trash me-1"></i>Excluir
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- View Imprimir -->
+    <div class="container">
+        <div class="service-header">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h2 class="mb-0">
+                        <i class="bi bi-printer me-2"></i>
+                        Imprimir Relatórios
+                    </h2>
+                    <p class="mb-0 mt-2">Selecione um relatório para impressão</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Busca do Relatório -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-search me-2"></i>Buscar Relatório para Impressão
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label class="form-label">Número do Relatório</label>
+                        <input type="text" class="form-control" id="numeroRelatorioImprimir" placeholder="Ex: 001">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Razão Social</label>
+                        <input type="text" class="form-control" id="razaoSocialImprimir" placeholder="Nome da empresa">
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button type="button" class="btn btn-primary me-2" onclick="buscarRelatorioImprimir()">
+                            <i class="bi bi-search me-1"></i>Buscar
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="limparBuscaImprimir()">
+                            <i class="bi bi-arrow-clockwise me-1"></i>Limpar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Visualização do Relatório -->
+        <div class="card" id="relatorioParaImpressao" style="display: none;">
+            <div class="card-header d-flex justify-content-between align-items-center no-print">
+                <h5 class="mb-0">
+                    <i class="bi bi-file-earmark-text me-2"></i>Relatório N° <span id="numeroRelatorioVisualizacao"></span>
+                </h5>
+                <div>
+                    <button type="button" class="btn btn-success me-2" onclick="imprimirRelatorioCompleto()">
+                        <i class="bi bi-printer me-1"></i>Imprimir
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary" onclick="cancelarVisualizacao()">
+                        <i class="bi bi-x-circle me-1"></i>Cancelar
+                    </button>
+                </div>
+            </div>
+            <div class="card-body" id="conteudoRelatorioImpressao">
+                <!-- Conteúdo do relatório será carregado aqui -->
+            </div>
+        </div>
+
+        <!-- Lista de Relatórios Recentes -->
+        <div class="card" id="listaRecentesImprimir">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-clock-history me-2"></i>Relatórios Recentes
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover table-sm">
+                        <thead class="table-light">
+                            <tr>
+                                <th>N°</th>
+                                <th>Data</th>
+                                <th>Empresa</th>
+                                <th>Tipo Serviço</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaRecentesImprimir">
+                            <!-- Dados serão carregados via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Template do Relatório para Impressão -->
+    <div id="templateRelatorioImpressao" style="display: none;">
+        <div class="service-header print-header">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h2 class="mb-0">
+                        <i class="bi bi-fuel-pump me-2"></i>
+                        JM Técnica - Relatório de Serviço
+                    </h2>
+                    <p class="mb-0 mt-2">Assessoria e Serviços Técnicos em Equipamentos para Postos de Combustível</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <h3 class="mb-0">N° <span class="numero-relatorio-print"></span></h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="print-content">
+            <!-- Conteúdo detalhado do relatório será inserido aqui -->
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/imprimir.js"></script>
+</body>
+</html>

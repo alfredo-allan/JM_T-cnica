@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Relatórios - Sistema JM Técnica</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="assets/css/styles.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="index.html">
+                <i class="bi bi-fuel-pump me-2"></i>
+                JM Técnica
+            </a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="criar.html">
+                            <i class="bi bi-plus-circle me-1"></i>Criar Relatório
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="consultar.html">
+                            <i class="bi bi-search me-1"></i>Consultar
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="editar.html">
+                            <i class="bi bi-pencil-square me-1"></i>Editar
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="listar.html">
+                            <i class="bi bi-list-ul me-1"></i>Listar
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="imprimir.html">
+                            <i class="bi bi-printer me-1"></i>Imprimir
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="excluir.html">
+                            <i class="bi bi-trash me-1"></i>Excluir
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- View Editar -->
+    <div class="container">
+        <div class="service-header">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h2 class="mb-0">
+                        <i class="bi bi-pencil-square me-2"></i>
+                        Editar Relatórios
+                    </h2>
+                    <p class="mb-0 mt-2">Selecione um relatório para editar</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Busca do Relatório -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-search me-2"></i>Buscar Relatório
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label class="form-label">Número do Relatório</label>
+                        <input type="text" class="form-control" id="numeroRelatorioEditar" placeholder="Ex: 001">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Razão Social</label>
+                        <input type="text" class="form-control" id="razaoSocialEditar" placeholder="Nome da empresa">
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button type="button" class="btn btn-primary me-2" onclick="buscarRelatorioEditar()">
+                            <i class="bi bi-search me-1"></i>Buscar
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="limparBuscaEditar()">
+                            <i class="bi bi-arrow-clockwise me-1"></i>Limpar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulário de Edição -->
+        <div class="card" id="formularioEdicao" style="display: none;">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="bi bi-file-earmark-text me-2"></i>Editando Relatório N° <span id="numeroRelatorioEditando"></span>
+                </h5>
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="cancelarEdicao()">
+                    <i class="bi bi-x-circle me-1"></i>Cancelar
+                </button>
+            </div>
+            <div class="card-body">
+                <form id="formEditarRelatorio">
+                    <!-- Mesmo formulário do criar, mas com dados preenchidos -->
+                    <!-- Tipos de Serviço -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <label class="form-label fw-bold">TIPOS DE SERVIÇOS</label>
+                            <div class="d-flex gap-3 flex-wrap">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="preventivaEdit" name="tipoServico" value="preventiva">
+                                    <label class="form-check-label" for="preventivaEdit">PREVENTIVA</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="corretivaEdit" name="tipoServico" value="corretiva">
+                                    <label class="form-check-label" for="corretivaEdit">CORRETIVA</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="pendenciaEdit" name="tipoServico" value="pendencia">
+                                    <label class="form-check-label" for="pendenciaEdit">PENDÊNCIA</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="extraEdit" name="tipoServico" value="extra">
+                                    <label class="form-check-label" for="extraEdit">EXTRA</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Informações da Empresa -->
+                    <div class="row mb-4">
+                        <div class="col-md-8">
+                            <label class="form-label">Razão Social</label>
+                            <input type="text" class="form-control" name="razaoSocial" id="razaoSocialEdit" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">CNPJ</label>
+                            <input type="text" class="form-control" name="cnpj" id="cnpjEdit" placeholder="00.000.000/0000-00">
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label">Endereço</label>
+                            <input type="text" class="form-control" name="endereco" id="enderecoEdit">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Cidade/UF</label>
+                            <input type="text" class="form-control" name="cidadeUf" id="cidadeUfEdit">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Inscrição Estadual</label>
+                            <input type="text" class="form-control" name="inscricaoEstadual" id="inscricaoEstadualEdit">
+                        </div>
+                    </div>
+
+                    <!-- Serviços Executados -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">N° BICO / DESC. SERVIÇOS EXECUTADOS</label>
+                        <textarea class="form-control" name="servicosExecutados" id="servicosExecutadosEdit" rows="5"
+                            placeholder="Descreva detalhadamente os serviços executados..."></textarea>
+                    </div>
+
+                    <!-- Data/Hora -->
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <label class="form-label">Data</label>
+                            <input type="date" class="form-control" name="dataServico" id="dataServicoEdit" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Hora Início</label>
+                            <input type="time" class="form-control" name="horaInicio" id="horaInicioEdit">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Hora Fim</label>
+                            <input type="time" class="form-control" name="horaFim" id="horaFimEdit">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Total Horas</label>
+                            <input type="text" class="form-control" name="totalHoras" id="totalHorasEdit" readonly>
+                        </div>
+                    </div>
+
+                    <!-- Botões -->
+                    <div class="d-flex gap-2 justify-content-end">
+                        <button type="button" class="btn btn-secondary" onclick="cancelarEdicao()">
+                            <i class="bi bi-x-circle me-1"></i>Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-check-circle me-1"></i>Salvar Alterações
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Mensagem quando nenhum relatório for encontrado -->
+        <div class="alert alert-warning" id="nenhumRelatorioEncontrado" style="display: none;">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            Nenhum relatório encontrado com os critérios informados.
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/editar.js"></script>
+</body>
+</html>
