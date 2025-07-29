@@ -1,17 +1,8 @@
 import os
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import DeclarativeBase
-from flask_migrate import Migrate
-from flask_cors import CORS
+from extensions import db, migrate, cors
 import pytz
 from datetime import datetime
-
-class Base(DeclarativeBase):
-    pass
-
-db = SQLAlchemy(model_class=Base)
-migrate = Migrate()
 
 def create_app():
     app = Flask(__name__)
@@ -31,11 +22,11 @@ def create_app():
     # Inicializar extensões
     db.init_app(app)
     migrate.init_app(app, db)
-    CORS(app, origins=["http://localhost:5000", "http://127.0.0.1:5000"])
+    cors.init_app(app, origins=["http://localhost:5000", "http://127.0.0.1:5000"])
     
     # Registrar blueprints
     from routes.relatorios import relatorios_bp
-    app.register_blueprint(relatorios_bp, url_prefix='/api')
+    app.register_blueprint(relatorios_bp)
     
     # Criar tabelas
     with app.app_context():
