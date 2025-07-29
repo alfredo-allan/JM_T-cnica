@@ -1,0 +1,1705 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema JM Técnica - Relatórios de Serviço</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            padding-bottom: 80px;
+            background-color: #f8f9fa;
+        }
+
+        .view {
+            display: none;
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+        }
+
+        .card {
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        }
+
+        .table-responsive {
+            border-radius: 0.375rem;
+        }
+
+        .btn-print {
+            background: none;
+            border: none;
+            color: #6c757d;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: color 0.15s ease-in-out;
+        }
+
+        .btn-print:hover {
+            color: #0d6efd;
+        }
+
+        .service-header {
+            background: linear-gradient(135deg, #198754 0%, #20c997 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .equipamentos-table th {
+            background-color: #e9ecef;
+            font-size: 0.875rem;
+            text-align: center;
+        }
+
+        .equipamentos-table td input {
+            min-width: 80px;
+        }
+
+        @media print {
+
+            .navbar,
+            .btn,
+            footer,
+            .no-print {
+                display: none !important;
+            }
+
+            .container {
+                max-width: none !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            .card {
+                border: none !important;
+                box-shadow: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <i class="bi bi-fuel-pump me-2"></i>
+                JM Técnica
+            </a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="mostrarView('criar')">
+                            <i class="bi bi-plus-circle me-1"></i>Criar Relatório
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="mostrarView('consultar')">
+                            <i class="bi bi-search me-1"></i>Consultar
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="mostrarView('editar')">
+                            <i class="bi bi-pencil-square me-1"></i>Editar
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="mostrarView('listar')">
+                            <i class="bi bi-list-ul me-1"></i>Listar
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="mostrarView('imprimir')">
+                            <i class="bi bi-printer me-1"></i>Imprimir
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="mostrarView('excluir')">
+                            <i class="bi bi-trash me-1"></i>Excluir
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- View Criar Relatório -->
+    <div class="container view active" id="view-criar">
+        <div class="service-header">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h2 class="mb-0">
+                        <i class="bi bi-file-earmark-plus me-2"></i>
+                        Criar Novo Relatório de Serviço
+                    </h2>
+                    <p class="mb-0 mt-2">Assessoria e Serviços Técnicos em Equipamentos para Postos de Combustível</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <h3 class="mb-0">N° <span id="numeroRelatorio">001</span></h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <form id="formCriarRelatorio">
+                    <!-- Tipos de Serviço -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <label class="form-label fw-bold">TIPOS DE SERVIÇOS</label>
+                            <div class="d-flex gap-3 flex-wrap">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="preventiva" name="tipoServico"
+                                        value="preventiva">
+                                    <label class="form-check-label" for="preventiva">PREVENTIVA</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="corretiva" name="tipoServico"
+                                        value="corretiva">
+                                    <label class="form-check-label" for="corretiva">CORRETIVA</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="pendencia" name="tipoServico"
+                                        value="pendencia">
+                                    <label class="form-check-label" for="pendencia">PENDÊNCIA</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="extra" name="tipoServico"
+                                        value="extra">
+                                    <label class="form-check-label" for="extra">EXTRA</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Informações da Empresa -->
+                    <div class="row mb-4">
+                        <div class="col-md-8">
+                            <label class="form-label">Razão Social</label>
+                            <input type="text" class="form-control" name="razaoSocial" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">CNPJ</label>
+                            <input type="text" class="form-control" name="cnpj" placeholder="00.000.000/0000-00">
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label">Endereço</label>
+                            <input type="text" class="form-control" name="endereco">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Cidade/UF</label>
+                            <input type="text" class="form-control" name="cidadeUf">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Inscrição Estadual</label>
+                            <input type="text" class="form-control" name="inscricaoEstadual">
+                        </div>
+                    </div>
+
+                    <!-- Equipamentos -->
+                    <h5 class="text-success mb-3">
+                        <i class="bi bi-gear me-2"></i>EQUIPAMENTOS
+                    </h5>
+                    <div class="table-responsive mb-4">
+                        <table class="table table-bordered table-sm equipamentos-table">
+                            <thead>
+                                <tr>
+                                    <th>N° BICO</th>
+                                    <th>MARCA</th>
+                                    <th>MODELO</th>
+                                    <th>SÉRIE</th>
+                                    <th>PRODUTO</th>
+                                    <th>INMETRO</th>
+                                    <th>PORTARIA APROVAÇÃO</th>
+                                    <th>N° LACRE RETIRADO</th>
+                                    <th>N° LACRE COLOCADO</th>
+                                    <th>SELO REPARADO RETIRADO</th>
+                                    <th>SELO REPARADO COLOCADO</th>
+                                </tr>
+                            </thead>
+                            <tbody id="equipamentosTableBody">
+                                <!-- 5 linhas de equipamentos -->
+                            </tbody>
+                        </table>
+                        <button type="button" class="btn btn-outline-success btn-sm"
+                            onclick="adicionarLinhaEquipamento()">
+                            <i class="bi bi-plus"></i> Adicionar Linha
+                        </button>
+                    </div>
+
+                    <!-- Serviços Executados -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">N° BICO / DESC. SERVIÇOS EXECUTADOS</label>
+                        <textarea class="form-control" name="servicosExecutados" rows="5"
+                            placeholder="Descreva detalhadamente os serviços executados..."></textarea>
+                    </div>
+
+                    <!-- Peças Utilizadas -->
+                    <h5 class="text-success mb-3">
+                        <i class="bi bi-tools me-2"></i>PEÇAS UTILIZADAS
+                    </h5>
+                    <div class="table-responsive mb-4">
+                        <table class="table table-bordered table-sm">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>PEÇAS UTILIZADAS</th>
+                                    <th>QUANT.</th>
+                                    <th>R$ UNITÁRIO</th>
+                                    <th>R$ TOTAL</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pecasTableBody">
+                                <!-- 4 linhas de peças -->
+                            </tbody>
+                            <tfoot>
+                                <tr class="table-success">
+                                    <td colspan="3" class="text-end fw-bold">TOTAL R$</td>
+                                    <td><input type="number" class="form-control form-control-sm" name="totalPecas"
+                                            step="0.01" readonly></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    <!-- Testes -->
+                    <h5 class="text-success mb-3">
+                        <i class="bi bi-clipboard-check me-2"></i>TESTES DE ATENÇÃO
+                    </h5>
+                    <div class="row g-2 mb-4">
+                        <div class="col-md-2">
+                            <label class="form-label">ETC:</label>
+                            <input type="text" class="form-control form-control-sm" name="etc">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">ETA:</label>
+                            <input type="text" class="form-control form-control-sm" name="eta">
+                        </div>
+                        <div class="col-md-1">
+                            <label class="form-label">GC:</label>
+                            <input type="text" class="form-control form-control-sm" name="gc">
+                        </div>
+                        <div class="col-md-1">
+                            <label class="form-label">GA:</label>
+                            <input type="text" class="form-control form-control-sm" name="ga">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">ARLA:</label>
+                            <input type="text" class="form-control form-control-sm" name="arla">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">DC:</label>
+                            <input type="text" class="form-control form-control-sm" name="dc">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">DA:</label>
+                            <input type="text" class="form-control form-control-sm" name="da">
+                        </div>
+                    </div>
+
+                    <!-- Observações -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Observações:</label>
+                        <textarea class="form-control" name="observacoes" rows="3"
+                            placeholder="Observações adicionais sobre o serviço..."></textarea>
+                    </div>
+
+                    <!-- Informações do Técnico -->
+                    <h5 class="text-success mb-3">
+                        <i class="bi bi-person-badge me-2"></i>TÉCNICO RESPONSÁVEL
+                    </h5>
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label">Nome do Técnico</label>
+                            <input type="text" class="form-control" name="nomeTecnico" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">RG</label>
+                            <input type="text" class="form-control" name="rgTecnico">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">CPF/RG</label>
+                            <input type="text" class="form-control" name="cpfTecnico">
+                        </div>
+                    </div>
+
+                    <!-- Horários -->
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <label class="form-label">Horário Chegada</label>
+                            <input type="time" class="form-control" name="horarioChegada">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Horário Saída</label>
+                            <input type="time" class="form-control" name="horarioSaida">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Data</label>
+                            <input type="date" class="form-control" name="dataServico" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Assinatura e Carimbo</label>
+                            <input type="text" class="form-control" name="assinaturaCarimbo">
+                        </div>
+                    </div>
+
+                    <!-- Botões -->
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="button" class="btn btn-outline-secondary me-md-2" onclick="limparFormulario()">
+                            <i class="bi bi-arrow-clockwise me-1"></i>Limpar
+                        </button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-save me-1"></i>Salvar Relatório
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Consultar -->
+    <div class="container view" id="view-consultar">
+        <div class="service-header">
+            <h2 class="mb-0">
+                <i class="bi bi-search me-2"></i>
+                Consultar Relatórios
+            </h2>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-8">
+                        <label class="form-label">Filtrar por Razão Social</label>
+                        <input type="text" class="form-control" id="filtroRazaoSocial"
+                            placeholder="Digite a razão social para filtrar..." oninput="filtrarRelatorios()">
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button class="btn btn-primary w-100" onclick="carregarTodosRelatorios()">
+                            <i class="bi bi-arrow-clockwise me-1"></i>Atualizar Lista
+                        </button>
+                    </div>
+                </div>
+
+                <div id="listaConsulta" class="table-responsive">
+                    <!-- Lista de relatórios será carregada aqui -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Editar -->
+    <div class="container view" id="view-editar">
+        <div class="service-header">
+            <h2 class="mb-0">
+                <i class="bi bi-pencil-square me-2"></i>
+                Editar Relatório
+            </h2>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-8">
+                        <label class="form-label">Número da Ordem de Serviço</label>
+                        <input type="text" class="form-control" id="numeroOrdemEditar"
+                            placeholder="Digite o número da ordem de serviço">
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button class="btn btn-primary w-100" onclick="buscarRelatorioParaEdicao()">
+                            <i class="bi bi-search me-1"></i>Buscar
+                        </button>
+                    </div>
+                </div>
+
+                <div id="formEdicaoContainer" style="display: none;">
+                    <!-- Formulário de edição será carregado aqui -->
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                        <button type="button" class="btn btn-outline-secondary me-md-2" onclick="cancelarEdicao()">
+                            <i class="bi bi-x-circle me-1"></i>Cancelar
+                        </button>
+                        <button type="button" class="btn btn-success" onclick="atualizarRelatorio()">
+                            <i class="bi bi-check-circle me-1"></i>Atualizar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Listar -->
+    <div class="container view" id="view-listar">
+        <div class="service-header">
+            <h2 class="mb-0">
+                <i class="bi bi-list-ul me-2"></i>
+                Listar Todos os Relatórios
+            </h2>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0">Relatórios Cadastrados</h5>
+                    <button class="btn btn-outline-success" onclick="carregarListaCompleta()">
+                        <i class="bi bi-arrow-clockwise me-1"></i>Atualizar
+                    </button>
+                </div>
+
+                <div id="listaCompleta" class="table-responsive">
+                    <!-- Lista completa será carregada aqui -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Imprimir -->
+    <div class="container view" id="view-imprimir">
+        <div class="service-header no-print">
+            <h2 class="mb-0">
+                <i class="bi bi-printer me-2"></i>
+                Imprimir Relatórios
+            </h2>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3 no-print">
+                    <h5 class="mb-0">Selecione o Relatório para Impressão</h5>
+                    <button class="btn btn-outline-success" onclick="carregarListaImpressao()">
+                        <i class="bi bi-arrow-clockwise me-1"></i>Atualizar
+                    </button>
+                </div>
+
+                <div id="listaImpressao">
+                    <!-- Lista para impressão será carregada aqui -->
+                </div>
+
+                <div id="relatorioImpressao" style="display: none;">
+                    <!-- Relatório formatado para impressão será exibido aqui -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Excluir -->
+    <div class="container view" id="view-excluir">
+        <div class="service-header">
+            <h2 class="mb-0">
+                <i class="bi bi-trash me-2"></i>
+                Excluir Relatório
+            </h2>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-8">
+                        <label class="form-label">Número da Ordem de Serviço</label>
+                        <input type="text" class="form-control" id="numeroOrdemExcluir"
+                            placeholder="Digite o número da ordem de serviço">
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button class="btn btn-primary w-100" onclick="buscarRelatorioParaExclusao()">
+                            <i class="bi bi-search me-1"></i>Buscar
+                        </button>
+                    </div>
+                </div>
+
+                <div id="relatorioExclusaoContainer" style="display: none;">
+                    <!-- Dados do relatório a ser excluído serão exibidos aqui -->
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                        <button type="button" class="btn btn-outline-secondary me-md-2" onclick="cancelarExclusao()">
+                            <i class="bi bi-x-circle me-1"></i>Cancelar
+                        </button>
+                        <button type="button" class="btn btn-danger" onclick="confirmarExclusao()">
+                            <i class="bi bi-trash me-1"></i>Excluir Definitivamente
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <!-- Modal Sucesso -->
+    <div class="modal fade" id="modalSucesso" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">
+                        <i class="bi bi-check-circle me-2"></i>Sucesso
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="modalSucessoBody">
+                    Operação realizada com sucesso!
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Erro -->
+    <div class="modal fade" id="modalErro" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">
+                        <i class="bi bi-exclamation-triangle me-2"></i>Erro
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="modalErroBody">
+                    Ocorreu um erro na operação.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Confirmação Exclusão -->
+    <div class="modal fade" id="modalConfirmacaoExclusao" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title">
+                        <i class="bi bi-exclamation-triangle me-2"></i>Confirmação
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-3">Tem certeza que deseja excluir este relatório?</p>
+                    <p class="text-danger small mb-0">
+                        <i class="bi bi-exclamation-triangle me-1"></i>
+                        Esta ação não pode ser desfeita.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" onclick="executarExclusao()" data-bs-dismiss="modal">
+                        <i class="bi bi-trash me-1"></i>Excluir
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-success text-light text-center py-3 fixed-bottom">
+        <div class="container">
+            <span>Desenvolvido por Leap In Technology 🚀 | JM Técnica - Sistema de Relatórios</span>
+        </div>
+    </footer>
+
+  // Dados em memória (simulando banco de dados)
+let relatorios = [];
+let proximoId = 1;
+
+// Inicialização
+document.addEventListener('DOMContentLoaded', function() {
+    inicializarFormulario();
+    gerarNumeroRelatorio();
+    carregarDadosExemplo();
+    
+    // Event listener para criar relatório
+    const form = document.getElementById('formCriarRelatorio');
+    if(form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            salvarRelatorio();
+        });
+    }
+});
+
+// Funções de navegação
+function mostrarView(view) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById('view-' + view).classList.add('active');
+    
+    // Carregar dados específicos para cada view
+    switch(view) {
+        case 'consultar':
+            carregarTodosRelatorios();
+            break;
+        case 'listar':
+            carregarListaCompleta();
+            break;
+        case 'imprimir':
+            carregarListaImpressao();
+            break;
+    }
+}
+
+// Inicializar formulário com linhas vazias
+function inicializarFormulario() {
+    // Adicionar 5 linhas para equipamentos
+    const equipamentosBody = document.getElementById('equipamentosTableBody');
+    if(equipamentosBody) {
+        equipamentosBody.innerHTML = '';
+        for(let i = 0; i < 5; i++) {
+            adicionarLinhaEquipamento();
+        }
+    }
+
+    // Adicionar 4 linhas para peças
+    const pecasBody = document.getElementById('pecasTableBody');
+    if(pecasBody) {
+        pecasBody.innerHTML = '';
+        for(let i = 0; i < 4; i++) {
+            adicionarLinhaPeca();
+        }
+    }
+
+    // Definir data atual
+    const dataInput = document.querySelector('input[name="dataServico"]');
+    if(dataInput) {
+        dataInput.value = new Date().toISOString().split('T')[0];
+    }
+}
+
+function adicionarLinhaEquipamento() {
+    const tbody = document.getElementById('equipamentosTableBody');
+    if(!tbody) return;
+    
+    const row = document.createElement('tr');
+    row.innerHTML = `
+        <td><input type="text" class="form-control form-control-sm" name="nBico[]"></td>
+        <td><input type="text" class="form-control form-control-sm" name="marca[]"></td>
+        <td><input type="text" class="form-control form-control-sm" name="modelo[]"></td>
+        <td><input type="text" class="form-control form-control-sm" name="serie[]"></td>
+        <td><input type="text" class="form-control form-control-sm" name="produto[]"></td>
+        <td><input type="text" class="form-control form-control-sm" name="inmetro[]"></td>
+        <td><input type="text" class="form-control form-control-sm" name="portaria[]"></td>
+        <td><input type="text" class="form-control form-control-sm" name="lacreRetirado[]"></td>
+        <td><input type="text" class="form-control form-control-sm" name="lacreColocado[]"></td>
+        <td><input type="text" class="form-control form-control-sm" name="seloRetirado[]"></td>
+        <td><input type="text" class="form-control form-control-sm" name="seloColocado[]"></td>
+    `;
+    tbody.appendChild(row);
+}
+
+function adicionarLinhaPeca() {
+    const tbody = document.getElementById('pecasTableBody');
+    if(!tbody) return;
+    
+    const row = document.createElement('tr');
+    row.innerHTML = `
+        <td><input type="text" class="form-control form-control-sm" name="peca[]"></td>
+        <td><input type="number" class="form-control form-control-sm" name="quantidade[]" onchange="calcularTotalPecas()"></td>
+        <td><input type="number" class="form-control form-control-sm" name="valorUnitario[]" step="0.01" onchange="calcularTotalPecas()"></td>
+        <td><input type="number" class="form-control form-control-sm" name="valorTotal[]" step="0.01" readonly></td>
+    `;
+    tbody.appendChild(row);
+}
+
+function calcularTotalPecas() {
+    const quantidades = document.querySelectorAll('input[name="quantidade[]"]');
+    const valoresUnitarios = document.querySelectorAll('input[name="valorUnitario[]"]');
+    const valoresTotal = document.querySelectorAll('input[name="valorTotal[]"]');
+    const totalGeral = document.querySelector('input[name="totalPecas"]');
+    
+    let somaTotal = 0;
+    
+    for(let i = 0; i < quantidades.length; i++) {
+        const qtd = parseFloat(quantidades[i].value) || 0;
+        const vlrUnit = parseFloat(valoresUnitarios[i].value) || 0;
+        const total = qtd * vlrUnit;
+        
+        valoresTotal[i].value = total.toFixed(2);
+        somaTotal += total;
+    }
+    
+    if(totalGeral) {
+        totalGeral.value = somaTotal.toFixed(2);
+    }
+}
+
+function gerarNumeroRelatorio() {
+    const numero = String(proximoId).padStart(3, '0');
+    const numeroElement = document.getElementById('numeroRelatorio');
+    if(numeroElement) {
+        numeroElement.textContent = numero;
+    }
+}
+
+// Função principal para salvar relatório
+function salvarRelatorio() {
+    const form = document.getElementById('formCriarRelatorio');
+    if(!form) return;
+    
+    const formData = new FormData(form);
+    const relatorio = {
+        id: proximoId++,
+        numero: String(proximoId - 1).padStart(3, '0'),
+        tiposServico: [],
+        equipamentos: [],
+        pecas: [],
+        dataCriacao: new Date().toISOString(),
+    };
+
+    // Capturar tipos de serviço
+    document.querySelectorAll('input[name="tipoServico"]:checked').forEach(checkbox => {
+        relatorio.tiposServico.push(checkbox.value);
+    });
+
+    // Capturar dados básicos
+    relatorio.razaoSocial = formData.get('razaoSocial') || '';
+    relatorio.cnpj = formData.get('cnpj') || '';
+    relatorio.endereco = formData.get('endereco') || '';
+    relatorio.cidadeUf = formData.get('cidadeUf') || '';
+    relatorio.inscricaoEstadual = formData.get('inscricaoEstadual') || '';
+    relatorio.servicosExecutados = formData.get('servicosExecutados') || '';
+    relatorio.observacoes = formData.get('observacoes') || '';
+    relatorio.nomeTecnico = formData.get('nomeTecnico') || '';
+    relatorio.rgTecnico = formData.get('rgTecnico') || '';
+    relatorio.cpfTecnico = formData.get('cpfTecnico') || '';
+    relatorio.horarioChegada = formData.get('horarioChegada') || '';
+    relatorio.horarioSaida = formData.get('horarioSaida') || '';
+    relatorio.dataServico = formData.get('dataServico') || '';
+    relatorio.assinaturaCarimbo = formData.get('assinaturaCarimbo') || '';
+
+    // Capturar testes
+    relatorio.testes = {
+        etc: formData.get('etc') || '',
+        eta: formData.get('eta') || '',
+        gc: formData.get('gc') || '',
+        ga: formData.get('ga') || '',
+        arla: formData.get('arla') || '',
+        dc: formData.get('dc') || '',
+        da: formData.get('da') || ''
+    };
+
+    // Capturar equipamentos
+    const nBicos = formData.getAll('nBico[]');
+    const marcas = formData.getAll('marca[]');
+    const modelos = formData.getAll('modelo[]');
+    const series = formData.getAll('serie[]');
+    const produtos = formData.getAll('produto[]');
+    const inmetros = formData.getAll('inmetro[]');
+    const portarias = formData.getAll('portaria[]');
+    const lacresRetirados = formData.getAll('lacreRetirado[]');
+    const lacresColocados = formData.getAll('lacreColocado[]');
+    const selosRetirados = formData.getAll('seloRetirado[]');
+    const selosColocados = formData.getAll('seloColocado[]');
+
+    for(let i = 0; i < nBicos.length; i++) {
+        if(nBicos[i] || marcas[i] || modelos[i]) {
+            relatorio.equipamentos.push({
+                nBico: nBicos[i] || '',
+                marca: marcas[i] || '',
+                modelo: modelos[i] || '',
+                serie: series[i] || '',
+                produto: produtos[i] || '',
+                inmetro: inmetros[i] || '',
+                portaria: portarias[i] || '',
+                lacreRetirado: lacresRetirados[i] || '',
+                lacreColocado: lacresColocados[i] || '',
+                seloRetirado: selosRetirados[i] || '',
+                seloColocado: selosColocados[i] || ''
+            });
+        }
+    }
+
+    // Capturar peças
+    const pecas = formData.getAll('peca[]');
+    const quantidades = formData.getAll('quantidade[]');
+    const valoresUnitarios = formData.getAll('valorUnitario[]');
+    const valoresTotal = formData.getAll('valorTotal[]');
+
+    for(let i = 0; i < pecas.length; i++) {
+        if(pecas[i] || quantidades[i]) {
+            relatorio.pecas.push({
+                peca: pecas[i] || '',
+                quantidade: quantidades[i] || '',
+                valorUnitario: valoresUnitarios[i] || '',
+                valorTotal: valoresTotal[i] || ''
+            });
+        }
+    }
+
+    relatorio.totalPecas = formData.get('totalPecas') || '0.00';
+
+    // Salvar no array
+    relatorios.push(relatorio);
+
+    // Mostrar sucesso
+    mostrarModalSucesso(`Relatório N° ${relatorio.numero} salvo com sucesso!`);
+
+    // Limpar formulário e gerar novo número
+    limparFormulario();
+    gerarNumeroRelatorio();
+}
+
+function limparFormulario() {
+    const form = document.getElementById('formCriarRelatorio');
+    if(form) {
+        form.reset();
+        const dataServico = document.querySelector('input[name="dataServico"]');
+        if(dataServico) {
+            dataServico.value = new Date().toISOString().split('T')[0];
+        }
+        
+        const totalPecas = document.querySelector('input[name="totalPecas"]');
+        if(totalPecas) {
+            totalPecas.value = '';
+        }
+        
+        // Limpar valores calculados
+        document.querySelectorAll('input[name="valorTotal[]"]').forEach(input => {
+            input.value = '';
+        });
+    }
+}
+
+// Funções de consulta
+function carregarTodosRelatorios() {
+    const container = document.getElementById('listaConsulta');
+    if(!container) return;
+    
+    if(relatorios.length === 0) {
+        container.innerHTML = `
+            <div class="text-center py-5">
+                <i class="bi bi-inbox display-1 text-muted"></i>
+                <h5 class="text-muted mt-3">Nenhum relatório encontrado</h5>
+                <p class="text-muted">Crie seu primeiro relatório na aba "Criar Relatório"</p>
+            </div>
+        `;
+        return;
+    }
+
+    let html = `
+        <table class="table table-striped table-hover">
+            <thead class="table-success">
+                <tr>
+                    <th>N°</th>
+                    <th>Razão Social</th>
+                    <th>Técnico</th>
+                    <th>Data Serviço</th>
+                    <th>Tipos de Serviço</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    relatorios.forEach(rel => {
+        html += `
+            <tr>
+                <td><span class="badge bg-success">${rel.numero}</span></td>
+                <td><strong>${rel.razaoSocial}</strong></td>
+                <td>${rel.nomeTecnico}</td>
+                <td>${formatarData(rel.dataServico)}</td>
+                <td>
+                    ${rel.tiposServico.map(tipo => 
+                        `<span class="badge bg-outline-success me-1">${tipo.toUpperCase()}</span>`
+                    ).join('')}
+                </td>
+                <td><span class="badge bg-success">Concluído</span></td>
+            </tr>
+        `;
+    });
+
+    html += `
+            </tbody>
+        </table>
+    `;
+
+    container.innerHTML = html;
+}
+
+function filtrarRelatorios() {
+    const filtroElement = document.getElementById('filtroRazaoSocial');
+    if(!filtroElement) return;
+    
+    const filtro = filtroElement.value.toLowerCase();
+    const relatoriosFiltrados = relatorios.filter(rel => 
+        rel.razaoSocial.toLowerCase().includes(filtro)
+    );
+
+    const container = document.getElementById('listaConsulta');
+    if(!container) return;
+    
+    if(relatoriosFiltrados.length === 0) {
+        container.innerHTML = `
+            <div class="text-center py-5">
+                <i class="bi bi-search display-1 text-muted"></i>
+                <h5 class="text-muted mt-3">Nenhum resultado encontrado</h5>
+                <p class="text-muted">Tente ajustar o filtro de pesquisa</p>
+            </div>
+        `;
+        return;
+    }
+
+    let html = `
+        <table class="table table-striped table-hover">
+            <thead class="table-success">
+                <tr>
+                    <th>N°</th>
+                    <th>Razão Social</th>
+                    <th>Técnico</th>
+                    <th>Data Serviço</th>
+                    <th>Tipos de Serviço</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    relatoriosFiltrados.forEach(rel => {
+        html += `
+            <tr>
+                <td><span class="badge bg-success">${rel.numero}</span></td>
+                <td><strong>${rel.razaoSocial}</strong></td>
+                <td>${rel.nomeTecnico}</td>
+                <td>${formatarData(rel.dataServico)}</td>
+                <td>
+                    ${rel.tiposServico.map(tipo => 
+                        `<span class="badge bg-outline-success me-1">${tipo.toUpperCase()}</span>`
+                    ).join('')}
+                </td>
+                <td><span class="badge bg-success">Concluído</span></td>
+            </tr>
+        `;
+    });
+
+    html += `
+            </tbody>
+        </table>
+    `;
+
+    container.innerHTML = html;
+}
+
+// Funções de listagem completa
+function carregarListaCompleta() {
+    const container = document.getElementById('listaCompleta');
+    if(!container) return;
+    
+    if(relatorios.length === 0) {
+        container.innerHTML = `
+            <div class="text-center py-5">
+                <i class="bi bi-inbox display-1 text-muted"></i>
+                <h5 class="text-muted mt-3">Nenhum relatório cadastrado</h5>
+                <p class="text-muted">Crie seu primeiro relatório na aba "Criar Relatório"</p>
+            </div>
+        `;
+        return;
+    }
+
+    let html = `
+        <table class="table table-striped table-hover">
+            <thead class="table-success">
+                <tr>
+                    <th>N°</th>
+                    <th>Razão Social</th>
+                    <th>CNPJ</th>
+                    <th>Técnico</th>
+                    <th>Data Serviço</th>
+                    <th>Data Criação</th>
+                    <th>Total Peças</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    relatorios.forEach(rel => {
+        html += `
+            <tr>
+                <td><span class="badge bg-success">${rel.numero}</span></td>
+                <td><strong>${rel.razaoSocial}</strong></td>
+                <td>${rel.cnpj}</td>
+                <td>${rel.nomeTecnico}</td>
+                <td>${formatarData(rel.dataServico)}</td>
+                <td>${formatarDataHora(rel.dataCriacao)}</td>
+                <td>R$ ${rel.totalPecas}</td>
+                <td>
+                    <button class="btn btn-sm btn-outline-primary" onclick="visualizarRelatorio('${rel.numero}')">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+    });
+
+    html += `
+            </tbody>
+        </table>
+    `;
+
+    container.innerHTML = html;
+}
+
+// Funções de edição
+function buscarRelatorioParaEdicao() {
+    const numeroElement = document.getElementById('numeroOrdemEditar');
+    if(!numeroElement) return;
+    
+    const numero = numeroElement.value.trim();
+    
+    if(!numero) {
+        mostrarModalErro('Por favor, digite o número da ordem de serviço.');
+        return;
+    }
+
+    const relatorio = relatorios.find(rel => rel.numero === numero.padStart(3, '0'));
+    
+    if(!relatorio) {
+        mostrarModalErro(`Relatório N° ${numero} não encontrado.`);
+        return;
+    }
+
+    // Preencher formulário de edição
+    preencherFormularioEdicao(relatorio);
+    const container = document.getElementById('formEdicaoContainer');
+    if(container) {
+        container.style.display = 'block';
+    }
+}
+
+function preencherFormularioEdicao(relatorio) {
+    const container = document.getElementById('formEdicaoContainer');
+    if(!container) return;
+    
+    container.innerHTML = `
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle me-2"></i>
+            Editando Relatório N° <strong>${relatorio.numero}</strong>
+        </div>
+        
+        <form id="formEdicaoRelatorio">
+            <input type="hidden" name="relatorioId" value="${relatorio.id}">
+            
+            <!-- Tipos de Serviço -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <label class="form-label fw-bold">TIPOS DE SERVIÇOS</label>
+                    <div class="d-flex gap-3 flex-wrap">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="preventivaEdit" name="tipoServico" value="preventiva" ${relatorio.tiposServico.includes('preventiva') ? 'checked' : ''}>
+                            <label class="form-check-label" for="preventivaEdit">PREVENTIVA</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="corretivaEdit" name="tipoServico" value="corretiva" ${relatorio.tiposServico.includes('corretiva') ? 'checked' : ''}>
+                            <label class="form-check-label" for="corretivaEdit">CORRETIVA</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="pendenciaEdit" name="tipoServico" value="pendencia" ${relatorio.tiposServico.includes('pendencia') ? 'checked' : ''}>
+                            <label class="form-check-label" for="pendenciaEdit">PENDÊNCIA</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="extraEdit" name="tipoServico" value="extra" ${relatorio.tiposServico.includes('extra') ? 'checked' : ''}>
+                            <label class="form-check-label" for="extraEdit">EXTRA</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Informações da Empresa -->
+            <div class="row mb-4">
+                <div class="col-md-8">
+                    <label class="form-label">Razão Social</label>
+                    <input type="text" class="form-control" name="razaoSocial" value="${relatorio.razaoSocial}" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">CNPJ</label>
+                    <input type="text" class="form-control" name="cnpj" value="${relatorio.cnpj}">
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <label class="form-label">Endereço</label>
+                    <input type="text" class="form-control" name="endereco" value="${relatorio.endereco}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Cidade/UF</label>
+                    <input type="text" class="form-control" name="cidadeUf" value="${relatorio.cidadeUf}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Inscrição Estadual</label>
+                    <input type="text" class="form-control" name="inscricaoEstadual" value="${relatorio.inscricaoEstadual}">
+                </div>
+            </div>
+
+            <!-- Serviços Executados -->
+            <div class="mb-4">
+                <label class="form-label fw-bold">N° BICO / DESC. SERVIÇOS EXECUTADOS</label>
+                <textarea class="form-control" name="servicosExecutados" rows="5">${relatorio.servicosExecutados}</textarea>
+            </div>
+
+            <!-- Observações -->
+            <div class="mb-4">
+                <label class="form-label fw-bold">Observações:</label>
+                <textarea class="form-control" name="observacoes" rows="3">${relatorio.observacoes}</textarea>
+            </div>
+
+            <!-- Técnico -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <label class="form-label">Nome do Técnico</label>
+                    <input type="text" class="form-control" name="nomeTecnico" value="${relatorio.nomeTecnico}" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">RG</label>
+                    <input type="text" class="form-control" name="rgTecnico" value="${relatorio.rgTecnico}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Data</label>
+                    <input type="date" class="form-control" name="dataServico" value="${relatorio.dataServico}" required>
+                </div>
+            </div>
+        </form>
+    `;
+}
+
+function atualizarRelatorio() {
+    const form = document.getElementById('formEdicaoRelatorio');
+    if(!form) return;
+
+    const formData = new FormData(form);
+    const relatorioId = parseInt(formData.get('relatorioId'));
+    
+    const relatorioIndex = relatorios.findIndex(rel => rel.id === relatorioId);
+    if(relatorioIndex === -1) {
+        mostrarModalErro('Relatório não encontrado para atualização.');
+        return;
+    }
+
+    // Atualizar dados
+    const relatorio = relatorios[relatorioIndex];
+    
+    // Capturar tipos de serviço
+    relatorio.tiposServico = [];
+    document.querySelectorAll('#formEdicaoRelatorio input[name="tipoServico"]:checked').forEach(checkbox => {
+        relatorio.tiposServico.push(checkbox.value);
+    });
+
+    // Atualizar campos básicos
+    relatorio.razaoSocial = formData.get('razaoSocial') || '';
+    relatorio.cnpj = formData.get('cnpj') || '';
+    relatorio.endereco = formData.get('endereco') || '';
+    relatorio.cidadeUf = formData.get('cidadeUf') || '';
+    relatorio.inscricaoEstadual = formData.get('inscricaoEstadual') || '';
+    relatorio.servicosExecutados = formData.get('servicosExecutados') || '';
+    relatorio.observacoes = formData.get('observacoes') || '';
+    relatorio.nomeTecnico = formData.get('nomeTecnico') || '';
+    relatorio.rgTecnico = formData.get('rgTecnico') || '';
+    relatorio.dataServico = formData.get('dataServico') || '';
+
+    mostrarModalSucesso(`Relatório N° ${relatorio.numero} atualizado com sucesso!`);
+    cancelarEdicao();
+}
+
+function cancelarEdicao() {
+    const container = document.getElementById('formEdicaoContainer');
+    if(container) {
+        container.style.display = 'none';
+    }
+    
+    const numeroInput = document.getElementById('numeroOrdemEditar');
+    if(numeroInput) {
+        numeroInput.value = '';
+    }
+}
+
+// Funções de impressão
+function carregarListaImpressao() {
+    const container = document.getElementById('listaImpressao');
+    if(!container) return;
+    
+    if(relatorios.length === 0) {
+        container.innerHTML = `
+            <div class="text-center py-5 no-print">
+                <i class="bi bi-inbox display-1 text-muted"></i>
+                <h5 class="text-muted mt-3">Nenhum relatório disponível para impressão</h5>
+                <p class="text-muted">Crie seu primeiro relatório na aba "Criar Relatório"</p>
+            </div>
+        `;
+        return;
+    }
+
+    let html = `
+        <div class="no-print">
+            <table class="table table-striped table-hover">
+                <thead class="table-success">
+                    <tr>
+                        <th>N°</th>
+                        <th>Razão Social</th>
+                        <th>Técnico</th>
+                        <th>Data</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
+
+    relatorios.forEach(rel => {
+        html += `
+            <tr>
+                <td><span class="badge bg-success">${rel.numero}</span></td>
+                <td><strong>${rel.razaoSocial}</strong></td>
+                <td>${rel.nomeTecnico}</td>
+                <td>${formatarData(rel.dataServico)}</td>
+                <td>
+                    <button class="btn btn-sm btn-primary" onclick="prepararImpressao('${rel.numero}')">
+                        <i class="bi bi-printer me-1"></i>Selecionar
+                    </button>
+                </td>
+            </tr>
+        `;
+    });
+
+    html += `
+                </tbody>
+            </table>
+        </div>
+    `;
+
+    container.innerHTML = html;
+}
+
+function prepararImpressao(numero) {
+    const relatorio = relatorios.find(rel => rel.numero === numero);
+    if(!relatorio) return;
+
+    const container = document.getElementById('relatorioImpressao');
+    if(!container) return;
+
+    container.innerHTML = gerarRelatorioParaImpressao(relatorio);
+    container.style.display = 'block';
+
+    // Esconder a lista
+    const lista = document.getElementById('listaImpressao');
+    if(lista) {
+        lista.style.display = 'none';
+    }
+
+    // Adicionar botão de impressão
+    const btnContainer = document.createElement('div');
+    btnContainer.className = 'text-center mt-4 no-print';
+    btnContainer.innerHTML = `
+        <button class="btn btn-success me-2" onclick="window.print()">
+            <i class="bi bi-printer me-1"></i>Imprimir
+        </button>
+        <button class="btn btn-secondary" onclick="voltarListaImpressao()">
+            <i class="bi bi-arrow-left me-1"></i>Voltar
+        </button>
+    `;
+    container.appendChild(btnContainer);
+}
+
+function voltarListaImpressao() {
+    const container = document.getElementById('relatorioImpressao');
+    if(container) {
+        container.style.display = 'none';
+    }
+    
+    const lista = document.getElementById('listaImpressao');
+    if(lista) {
+        lista.style.display = 'block';
+    }
+}
+
+function gerarRelatorioParaImpressao(relatorio) {
+    return `
+        <div class="service-header">
+            <div class="row align-items-center">
+                <div class="col-8">
+                    <h2 class="mb-0">
+                        <i class="bi bi-file-earmark-text me-2"></i>
+                        Relatório de Serviço
+                    </h2>
+                    <p class="mb-0 mt-2">Assessoria e Serviços Técnicos em Equipamentos para Postos de Combustível</p>
+                </div>
+                <div class="col-4 text-end">
+                    <h3 class="mb-0">N° ${relatorio.numero}</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="card border-0">
+            <div class="card-body">
+                <!-- Tipos de Serviço -->
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <strong>TIPOS DE SERVIÇOS:</strong> ${relatorio.tiposServico.join(', ').toUpperCase()}
+                    </div>
+                </div>
+
+                <!-- Dados da Empresa -->
+                <div class="row mb-3">
+                    <div class="col-8">
+                        <strong>Razão Social:</strong> ${relatorio.razaoSocial}
+                    </div>
+                    <div class="col-4">
+                        <strong>CNPJ:</strong> ${relatorio.cnpj}
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <strong>Endereço:</strong> ${relatorio.endereco}
+                    </div>
+                    <div class="col-3">
+                        <strong>Cidade/UF:</strong> ${relatorio.cidadeUf}
+                    </div>
+                    <div class="col-3">
+                        <strong>Inscrição Estadual:</strong> ${relatorio.inscricaoEstadual}
+                    </div>
+                </div>
+
+                <!-- Equipamentos -->
+                ${relatorio.equipamentos.length > 0 ? `
+                <h5 class="text-success mb-3">EQUIPAMENTOS</h5>
+                <div class="table-responsive mb-4">
+                    <table class="table table-bordered table-sm">
+                        <thead class="table-light">
+                            <tr>
+                                <th>N° BICO</th>
+                                <th>MARCA</th>
+                                <th>MODELO</th>
+                                <th>SÉRIE</th>
+                                <th>PRODUTO</th>
+                                <th>INMETRO</th>
+                                <th>PORTARIA</th>
+                                <th>LACRE RET.</th>
+                                <th>LACRE COL.</th>
+                                <th>SELO RET.</th>
+                                <th>SELO COL.</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${relatorio.equipamentos.map(eq => `
+                                <tr>
+                                    <td>${eq.nBico}</td>
+                                    <td>${eq.marca}</td>
+                                    <td>${eq.modelo}</td>
+                                    <td>${eq.serie}</td>
+                                    <td>${eq.produto}</td>
+                                    <td>${eq.inmetro}</td>
+                                    <td>${eq.portaria}</td>
+                                    <td>${eq.lacreRetirado}</td>
+                                    <td>${eq.lacreColocado}</td>
+                                    <td>${eq.seloRetirado}</td>
+                                    <td>${eq.seloColocado}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+                ` : ''}
+
+                <!-- Serviços Executados -->
+                ${relatorio.servicosExecutados ? `
+                <div class="mb-4">
+                    <h5 class="text-success">SERVIÇOS EXECUTADOS</h5>
+                    <div class="border p-3">
+                        ${relatorio.servicosExecutados.replace(/\n/g, '<br>')}
+                    </div>
+                </div>
+                ` : ''}
+
+                <!-- Peças -->
+                ${relatorio.pecas.length > 0 ? `
+                <h5 class="text-success mb-3">PEÇAS UTILIZADAS</h5>
+                <div class="table-responsive mb-4">
+                    <table class="table table-bordered table-sm">
+                        <thead class="table-light">
+                            <tr>
+                                <th>PEÇAS UTILIZADAS</th>
+                                <th>QUANT.</th>
+                                <th>R$ UNITÁRIO</th>
+                                <th>R$ TOTAL</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${relatorio.pecas.map(peca => `
+                                <tr>
+                                    <td>${peca.peca}</td>
+                                    <td>${peca.quantidade}</td>
+                                    <td>R$ ${peca.valorUnitario}</td>
+                                    <td>R$ ${peca.valorTotal}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                        <tfoot>
+                            <tr class="table-success">
+                                <td colspan="3" class="text-end fw-bold">TOTAL R$</td>
+                                <td class="fw-bold">R$ ${relatorio.totalPecas}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                ` : ''}
+
+                <!-- Testes -->
+                ${relatorio.testes ? `
+                <h5 class="text-success mb-3">TESTES DE ATENÇÃO</h5>
+                <div class="row mb-4">
+                    <div class="col-md-2"><strong>ETC:</strong> ${relatorio.testes.etc}</div>
+                    <div class="col-md-2"><strong>ETA:</strong> ${relatorio.testes.eta}</div>
+                    <div class="col-md-1"><strong>GC:</strong> ${relatorio.testes.gc}</div>
+                    <div class="col-md-1"><strong>GA:</strong> ${relatorio.testes.ga}</div>
+                    <div class="col-md-2"><strong>ARLA:</strong> ${relatorio.testes.arla}</div>
+                    <div class="col-md-2"><strong>DC:</strong> ${relatorio.testes.dc}</div>
+                    <div class="col-md-2"><strong>DA:</strong> ${relatorio.testes.da}</div>
+                </div>
+                ` : ''}
+
+                <!-- Observações -->
+                ${relatorio.observacoes ? `
+                <div class="mb-4">
+                    <h5 class="text-success">OBSERVAÇÕES</h5>
+                    <div class="border p-3">
+                        ${relatorio.observacoes.replace(/\n/g, '<br>')}
+                    </div>
+                </div>
+                ` : ''}
+
+                <!-- Técnico e Horários -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <strong>Técnico:</strong> ${relatorio.nomeTecnico}<br>
+                        <strong>RG:</strong> ${relatorio.rgTecnico}<br>
+                        <strong>CPF:</strong> ${relatorio.cpfTecnico}
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Data:</strong> ${formatarData(relatorio.dataServico)}<br>
+                        <strong>Chegada:</strong> ${relatorio.horarioChegada}<br>
+                        <strong>Saída:</strong> ${relatorio.horarioSaida}
+                    </div>
+                </div>
+            </div>
+        </div>`
+}
+
+// Funções de exclusão
+function buscarRelatorioParaExclusao() {
+    const numeroElement = document.getElementById('numeroOrdemExcluir');
+    if(!numeroElement) return;
+    
+    const numero = numeroElement.value.trim();
+    
+    if(!numero) {
+        mostrarModalErro('Por favor, digite o número da ordem de serviço.');
+        return;
+    }
+
+    const relatorio = relatorios.find(rel => rel.numero === numero.padStart(3, '0'));
+    
+    if(!relatorio) {
+        mostrarModalErro(`Relatório N° ${numero} não encontrado.`);
+        return;
+    }
+
+    // Mostrar dados do relatório para confirmação
+    mostrarDadosParaExclusao(relatorio);
+    const container = document.getElementById('relatorioExclusaoContainer');
+    if(container) {
+        container.style.display = 'block';
+    }
+}
+
+function mostrarDadosParaExclusao(relatorio) {
+    const container = document.getElementById('relatorioExclusaoContainer');
+    if(!container) return;
+    
+    container.innerHTML = `
+        <div class="alert alert-warning">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            <strong>ATENÇÃO:</strong> Você está prestes a excluir o relatório abaixo.
+        </div>
+        
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0">Relatório N° ${relatorio.numero}</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Razão Social:</strong> ${relatorio.razaoSocial}</p>
+                        <p><strong>CNPJ:</strong> ${relatorio.cnpj}</p>
+                        <p><strong>Técnico:</strong> ${relatorio.nomeTecnico}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Data Serviço:</strong> ${formatarData(relatorio.dataServico)}</p>
+                        <p><strong>Data Criação:</strong> ${formatarDataHora(relatorio.dataCriacao)}</p>
+                        <p><strong>Tipos:</strong> ${relatorio.tiposServico.join(', ').toUpperCase()}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <input type="hidden" id="relatorioParaExcluir" value="${relatorio.id}">
+        
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+            <button type="button" class="btn btn-outline-secondary me-md-2" onclick="cancelarExclusao()">
+                <i class="bi bi-x-circle me-1"></i>Cancelar
+            </button>
+            <button type="button" class="btn btn-danger" onclick="confirmarExclusao()">
+                <i class="bi bi-trash me-1"></i>Excluir Definitivamente
+            </button>
+        </div>
+    `;
+}
+
+function confirmarExclusao() {
+    const modal = document.getElementById('modalConfirmacaoExclusao');
+    if(modal && window.bootstrap) {
+        new bootstrap.Modal(modal).show();
+    }
+}
+
+function executarExclusao() {
+    const relatorioIdElement = document.getElementById('relatorioParaExcluir');
+    if(!relatorioIdElement) return;
+    
+    const relatorioId = parseInt(relatorioIdElement.value);
+    const relatorioIndex = relatorios.findIndex(rel => rel.id === relatorioId);
+    
+    if(relatorioIndex === -1) {
+        mostrarModalErro('Relatório não encontrado para exclusão.');
+        return;
+    }
+
+    const relatorio = relatorios[relatorioIndex];
+    relatorios.splice(relatorioIndex, 1);
+    
+    mostrarModalSucesso(`Relatório N° ${relatorio.numero} excluído com sucesso!`);
+    cancelarExclusao();
+}
+
+function cancelarExclusao() {
+    const container = document.getElementById('relatorioExclusaoContainer');
+    if(container) {
+        container.style.display = 'none';
+    }
+    
+    const numeroInput = document.getElementById('numeroOrdemExcluir');
+    if(numeroInput) {
+        numeroInput.value = '';
+    }
+}
+
+// Funções utilitárias
+function formatarData(dataISO) {
+    if(!dataISO) return '';
+    const data = new Date(dataISO);
+    return data.toLocaleDateString('pt-BR');
+}
+
+function formatarDataHora(dataISO) {
+    if(!dataISO) return '';
+    const data = new Date(dataISO);
+    return data.toLocaleDateString('pt-BR') + ' às ' + data.toLocaleTimeString('pt-BR');
+}
+
+function mostrarModalSucesso(mensagem) {
+    const modalBody = document.getElementById('modalSucessoBody');
+    if(modalBody) {
+        modalBody.textContent = mensagem;
+    }
+    
+    const modal = document.getElementById('modalSucesso');
+    if(modal && window.bootstrap) {
+        new bootstrap.Modal(modal).show();
+    }
+}
+
+function mostrarModalErro(mensagem) {
+    const modalBody = document.getElementById('modalErroBody');
+    if(modalBody) {
+        modalBody.textContent = mensagem;
+    }
+    
+    const modal = document.getElementById('modalErro');
+    if(modal && window.bootstrap) {
+        new bootstrap.Modal(modal).show();
+    }
+}
+
+function visualizarRelatorio(numero) {
+    const relatorio = relatorios.find(rel => rel.numero === numero);
+    if(!relatorio) return;
+    
+    // Aqui você pode implementar uma modal ou nova view para visualização completa
+    console.log('Visualizando relatório:', relatorio);
+}
+
+// Dados de exemplo para demonstração
+function carregarDadosExemplo() {
+    const dadosExemplo = [
+        {
+            id: proximoId++,
+            numero: '001',
+            tiposServico: ['preventiva'],
+            razaoSocial: 'Posto Central Ltda',
+            cnpj: '12.345.678/0001-90',
+            endereco: 'Rua Principal, 123',
+            cidadeUf: 'São Paulo/SP',
+            inscricaoEstadual: '123456789',
+            servicosExecutados: 'Manutenção preventiva nos bicos 1 e 2. Verificação de vazamentos.',
+            observacoes: 'Equipamentos em bom estado.',
+            nomeTecnico: 'João Silva',
+            rgTecnico: '12.345.678-9',
+            cpfTecnico: '123.456.789-00',
+            horarioChegada: '08:00',
+            horarioSaida: '12:00',
+            dataServico: '2025-01-15',
+            assinaturaCarimbo: 'João Silva - CRT 12345',
+            equipamentos: [
+                {
+                    nBico: '01',
+                    marca: 'Wayne',
+                    modelo: 'Helix 6000',
+                    serie: 'WH123456',
+                    produto: 'Gasolina',
+                    inmetro: 'BR-001',
+                    portaria: '123/2020',
+                    lacreRetirado: 'L001',
+                    lacreColocado: 'L002',
+                    seloRetirado: 'S001',
+                    seloColocado: 'S002'
+                }
+            ],
+            pecas: [
+                {
+                    peca: 'Filtro de combustível',
+                    quantidade: '2',
+                    valorUnitario: '25.00',
+                    valorTotal: '50.00'
+                }
+            ],
+            totalPecas: '50.00',
+            testes: {
+                etc: 'OK',
+                eta: 'OK', 
+                gc: 'OK',
+                ga: 'OK',
+                arla: 'N/A',
+                dc: 'OK',
+                da: 'OK'
+            },
+            dataCriacao: new Date().toISOString()
+        }
+    ];
+    
+    relatorios.push(...dadosExemplo);
+}
