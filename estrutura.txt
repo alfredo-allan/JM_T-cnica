@@ -1,0 +1,20 @@
+.
+├── attached_assets
+│   └── Pasted--DOCTYPE-html-html-lang-pt-BR-head-meta-charset-UTF-8-meta-name-viewport-con-1753747252881_1753747252882.txt
+├── estrutura.txt
+├── frontend
+│   ├── assets
+│   │   ├── css
+│   │   └── js
+│   ├── consultar.html
+│   ├── criar.html
+│   ├── editar.html
+│   ├── excluir.html
+│   ├── imprimir.html
+│   ├── index.html
+│   └── listar.html
+├── pyproject.toml
+├── replit.md
+└── uv.lock
+
+6 directories, 12 files
