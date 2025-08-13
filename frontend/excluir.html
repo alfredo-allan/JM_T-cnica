@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     <link href="assets/css/styles.css" rel="stylesheet">
 </head>
+
 <body>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-success">
@@ -70,7 +72,7 @@
         <!-- Alerta de Aviso -->
         <div class="alert alert-warning">
             <i class="bi bi-exclamation-triangle me-2"></i>
-            <strong>Atenção!</strong> A exclusão de relatórios é uma ação irreversível. 
+            <strong>Atenção!</strong> A exclusão de relatórios é uma ação irreversível.
             Certifique-se de que realmente deseja excluir o relatório antes de confirmar.
         </div>
 
@@ -114,7 +116,7 @@
                 <div class="alert alert-danger">
                     <strong>Você está prestes a excluir o seguinte relatório:</strong>
                 </div>
-                
+
                 <div id="dadosRelatorioExcluir">
                     <!-- Dados do relatório a ser excluído serão mostrados aqui -->
                 </div>
@@ -132,7 +134,8 @@
                     <button type="button" class="btn btn-secondary" onclick="cancelarExclusao()">
                         <i class="bi bi-x-circle me-1"></i>Cancelar
                     </button>
-                    <button type="button" class="btn btn-danger" id="btnConfirmarExclusao" onclick="confirmarExclusaoRelatorio()" disabled>
+                    <button type="button" class="btn btn-danger" id="btnConfirmarExclusao"
+                        onclick="confirmarExclusaoRelatorio()" disabled>
                         <i class="bi bi-trash me-1"></i>Excluir Relatório
                     </button>
                 </div>
@@ -198,4 +201,5 @@
     <script src="assets/js/main.js"></script>
     <script src="assets/js/excluir.js"></script>
 </body>
+
 </html>

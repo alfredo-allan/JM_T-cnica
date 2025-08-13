@@ -3,18 +3,28 @@ let contadorEquipamentos = 0;
 let contadorPecas = 0;
 
 // Inicialização da página criar
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     inicializarPaginaCriar();
 });
 
-function inicializarPaginaCriar() {
-    // Gerar número do relatório
-    document.getElementById('numeroRelatorio').textContent = gerarProximoNumero();
-    
+async function inicializarPaginaCriar() {
+    // Gerar número do relatório de forma assíncrona
+    try {
+        const numeroRelatorio = await gerarProximoNumero();
+        document.getElementById('numeroRelatorio').textContent = numeroRelatorio;
+    } catch (error) {
+        console.error('Erro ao gerar número do relatório:', error);
+        // Fallback para um número padrão em caso de erro
+        const anoAtual = new Date().getFullYear();
+        const fallbackNumero = `REL-${anoAtual}-001`;
+        document.getElementById('numeroRelatorio').textContent = fallbackNumero;
+        mostrarAlerta('warning', 'Erro ao gerar número do relatório. Usando número padrão.');
+    }
+
     // Adicionar linhas iniciais às tabelas
     adicionarLinhasIniciaisEquipamentos();
     adicionarLinhasIniciaisPecas();
-    
+
     // Configurar eventos do formulário
     configurarEventosFormulario();
 }
@@ -71,9 +81,9 @@ function calcularTotalPeca(input) {
     const quantidade = parseFloat(linha.querySelector('input[name="pecaQuantidade[]"]').value) || 0;
     const valorUnitario = parseFloat(linha.querySelector('input[name="pecaValorUnitario[]"]').value) || 0;
     const total = quantidade * valorUnitario;
-    
+
     linha.querySelector('input[name="pecaValorTotal[]"]').value = total.toFixed(2);
-    
+
     // Calcular total geral
     calcularTotalGeralPecas();
 }
@@ -81,30 +91,30 @@ function calcularTotalPeca(input) {
 function calcularTotalGeralPecas() {
     const totaisLinhas = document.querySelectorAll('input[name="pecaValorTotal[]"]');
     let totalGeral = 0;
-    
+
     totaisLinhas.forEach(input => {
         totalGeral += parseFloat(input.value) || 0;
     });
-    
+
     document.querySelector('input[name="totalPecas"]').value = totalGeral.toFixed(2);
 }
 
 function configurarEventosFormulario() {
     const form = document.getElementById('formCriarRelatorio');
-    
+
     // Evento de submissão do formulário
-    form.addEventListener('submit', function(e) {
+    form.addEventListener('submit', function (e) {
         e.preventDefault();
         salvarRelatorio();
     });
-    
+
     // Eventos para cálculo de horas
     const horaInicio = form.querySelector('input[name="horaInicio"]');
     const horaFim = form.querySelector('input[name="horaFim"]');
     const totalHoras = form.querySelector('input[name="totalHoras"]');
-    
+
     [horaInicio, horaFim].forEach(input => {
-        input.addEventListener('change', function() {
+        input.addEventListener('change', function () {
             if (horaInicio.value && horaFim.value) {
                 totalHoras.value = calcularTotalHoras(horaInicio.value, horaFim.value);
             }
@@ -114,32 +124,39 @@ function configurarEventosFormulario() {
 
 function salvarRelatorio() {
     const form = document.getElementById('formCriarRelatorio');
-    
+
     // Validar formulário
     if (!validarFormulario(form)) {
         mostrarAlerta('danger', 'Por favor, preencha todos os campos obrigatórios.');
         return;
     }
-    
+
     // Coletar dados do formulário
     const dadosRelatorio = coletarDadosFormulario(form);
-    
+
     // Salvar localmente (backup)
     const numeroRelatorio = document.getElementById('numeroRelatorio').textContent;
     salvarLocal(`relatorio_${numeroRelatorio}`, dadosRelatorio);
-    
+
     // Tentar salvar na API
     salvarNaAPI(dadosRelatorio)
         .then(() => {
             mostrarAlerta('success', 'Relatório salvo com sucesso!');
+
+            // Usar modal de confirmação para criar novo relatório
             setTimeout(() => {
-                if (confirm('Deseja criar um novo relatório?')) {
-                    limparFormulario();
-                    document.getElementById('numeroRelatorio').textContent = gerarProximoNumero();
-                } else {
-                    window.location.href = 'index.html';
-                }
-            }, 2000);
+                showConfirm(
+                    'Relatório Salvo!',
+                    'Relatório criado com sucesso! Deseja criar um novo relatório?',
+                    function (confirmed) {
+                        if (confirmed) {
+                            limparFormularioEGerarNovoNumero();
+                        } else {
+                            window.location.href = 'index.html';
+                        }
+                    }
+                );
+            }, 1000);
         })
         .catch(error => {
             console.error('Erro ao salvar na API:', error);
@@ -173,7 +190,7 @@ function coletarDadosFormulario(form) {
         pecas: [],
         dataCriacao: new Date().toISOString()
     };
-    
+
     // Coletar equipamentos
     const numerosBico = formData.getAll('numeroBico[]');
     for (let i = 0; i < numerosBico.length; i++) {
@@ -193,7 +210,7 @@ function coletarDadosFormulario(form) {
             });
         }
     }
-    
+
     // Coletar peças
     const pecasDescricao = formData.getAll('pecaDescricao[]');
     for (let i = 0; i < pecasDescricao.length; i++) {
@@ -206,7 +223,7 @@ function coletarDadosFormulario(form) {
             });
         }
     }
-    
+
     return dados;
 }
 
@@ -219,23 +236,38 @@ async function salvarNaAPI(dados) {
     }
 }
 
-function limparFormulario() {
+// Função refatorada para gerar novo número ao limpar formulário
+async function limparFormularioEGerarNovoNumero() {
     const form = document.getElementById('formCriarRelatorio');
     form.reset();
-    
+
     // Limpar validações
     limparValidacao(form);
-    
+
     // Recriar tabelas
     document.getElementById('equipamentosTableBody').innerHTML = '';
     document.getElementById('pecasTableBody').innerHTML = '';
     contadorEquipamentos = 0;
     contadorPecas = 0;
-    
+
     adicionarLinhasIniciaisEquipamentos();
     adicionarLinhasIniciaisPecas();
-    
+
     // Definir data atual
     const hoje = new Date().toISOString().split('T')[0];
     form.querySelector('input[name="dataServico"]').value = hoje;
+
+    // Gerar novo número do relatório
+    try {
+        const novoNumero = await gerarProximoNumero();
+        document.getElementById('numeroRelatorio').textContent = novoNumero;
+    } catch (error) {
+        console.error('Erro ao gerar novo número:', error);
+        mostrarAlerta('warning', 'Erro ao gerar novo número do relatório.');
+    }
+}
+
+// Função para compatibilidade (mantida para não quebrar código existente)
+function limparFormulario() {
+    limparFormularioEGerarNovoNumero();
 }

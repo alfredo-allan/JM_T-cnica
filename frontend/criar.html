@@ -1,13 +1,67 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Criar Relatório - Sistema JM Técnica</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="assets/css/styles.css" rel="stylesheet">
+    <style>
+        .service-header {
+            background: linear-gradient(135deg, #198754 0%, #157347 100%);
+            color: white;
+            padding: 2rem;
+            margin: -15px -15px 30px -15px;
+            border-radius: 0.375rem 0.375rem 0 0;
+        }
+
+        .equipamentos-table input {
+            font-size: 0.8rem;
+            padding: 0.25rem;
+        }
+
+        .modal-header.modal-success {
+            background: linear-gradient(135deg, #198754 0%, #157347 100%);
+            color: white;
+            border-bottom: none;
+        }
+
+        .modal-header.modal-error {
+            background: linear-gradient(135deg, #dc3545 0%, #bb2d3b 100%);
+            color: white;
+            border-bottom: none;
+        }
+
+        .modal-header.modal-warning {
+            background: linear-gradient(135deg, #fd7e14 0%, #e55d0f 100%);
+            color: white;
+            border-bottom: none;
+        }
+
+        .modal-header.modal-info {
+            background: linear-gradient(135deg, #0dcaf0 0%, #0aa2c0 100%);
+            color: white;
+            border-bottom: none;
+        }
+
+        .modal-icon {
+            font-size: 1.5rem;
+            margin-right: 0.5rem;
+        }
+
+        .modal-body {
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .modal-message {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+    </style>
 </head>
+
 <body>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-success">
@@ -105,27 +159,44 @@
                     <!-- Informações da Empresa -->
                     <div class="row mb-4">
                         <div class="col-md-8">
-                            <label class="form-label">Razão Social</label>
-                            <input type="text" class="form-control" name="razaoSocial" required>
+                            <label class="form-label">Razão Social <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="razaoSocial" required
+                                placeholder="Digite a razão social da empresa">
+                            <div class="invalid-feedback">
+                                Por favor, informe a razão social da empresa.
+                            </div>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">CNPJ</label>
                             <input type="text" class="form-control" name="cnpj" placeholder="00.000.000/0000-00">
+                            <div class="invalid-feedback">
+                                CNPJ deve ter 14 dígitos e ser válido.
+                            </div>
+                            <div class="valid-feedback">
+                                CNPJ válido!
+                            </div>
                         </div>
                     </div>
 
                     <div class="row mb-4">
                         <div class="col-md-6">
                             <label class="form-label">Endereço</label>
-                            <input type="text" class="form-control" name="endereco">
+                            <input type="text" class="form-control" name="endereco" placeholder="Rua, número, bairro">
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Cidade/UF</label>
-                            <input type="text" class="form-control" name="cidadeUf">
+                            <input type="text" class="form-control" name="cidadeUf" placeholder="Cidade - UF">
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Inscrição Estadual</label>
-                            <input type="text" class="form-control" name="inscricaoEstadual">
+                            <input type="text" class="form-control" name="inscricaoEstadual"
+                                placeholder="000.000.000.000 ou ISENTO">
+                            <div class="invalid-feedback">
+                                IE deve ter 8-14 dígitos ou ser "ISENTO".
+                            </div>
+                            <div class="valid-feedback">
+                                Inscrição Estadual válida!
+                            </div>
                         </div>
                     </div>
 
@@ -151,10 +222,11 @@
                                 </tr>
                             </thead>
                             <tbody id="equipamentosTableBody">
-                                <!-- 5 linhas de equipamentos serão adicionadas via JavaScript -->
+                                <!-- Linhas serão adicionadas via JavaScript -->
                             </tbody>
                         </table>
-                        <button type="button" class="btn btn-outline-success btn-sm" onclick="adicionarLinhaEquipamento()">
+                        <button type="button" class="btn btn-outline-success btn-sm"
+                            onclick="adicionarLinhaEquipamento()">
                             <i class="bi bi-plus"></i> Adicionar Linha
                         </button>
                     </div>
@@ -181,7 +253,7 @@
                                 </tr>
                             </thead>
                             <tbody id="pecasTableBody">
-                                <!-- 4 linhas de peças serão adicionadas via JavaScript -->
+                                <!-- Linhas serão adicionadas via JavaScript -->
                             </tbody>
                             <tfoot>
                                 <tr class="table-success">
@@ -246,7 +318,7 @@
 
                     <!-- Botões -->
                     <div class="d-flex gap-2 justify-content-end">
-                        <button type="button" class="btn btn-secondary" onclick="limparFormulario()">
+                        <button type="button" class="btn btn-secondary" onclick="limparFormularioEGerarNovoNumero()">
                             <i class="bi bi-arrow-clockwise me-1"></i>Limpar
                         </button>
                         <button type="submit" class="btn btn-success">
@@ -258,8 +330,359 @@
         </div>
     </div>
 
+    <!-- Modal Universal - Versão Corrigida -->
+    <div class="modal fade" id="modalUniversal" tabindex="-1" aria-labelledby="modalUniversalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header" id="modalHeader">
+                    <h5 class="modal-title d-flex align-items-center" id="modalUniversalLabel">
+                        <i class="modal-icon" id="modalIcon"></i>
+                        <span id="modalTitle"></span>
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"
+                        id="modalCloseBtn"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="modal-message" id="modalMessage"></div>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn" id="modalBtnPrimary">OK</button>
+                    <button type="button" class="btn btn-outline-secondary" id="modalBtnSecondary"
+                        style="display: none;">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts - IMPORTANTE: Carregar na ordem correta -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Carregando nossos arquivos JS refatorados -->
     <script src="assets/js/main.js"></script>
     <script src="assets/js/criar.js"></script>
+
+    <!-- Funções do modal mantidas inline (não conflitam) -->
+    <script>
+        // Configurações do modal por tipo
+        const modalConfigs = {
+            success: {
+                headerClass: 'modal-success',
+                icon: 'bi-check-circle-fill',
+                btnClass: 'btn-success'
+            },
+            error: {
+                headerClass: 'modal-error',
+                icon: 'bi-x-circle-fill',
+                btnClass: 'btn-danger'
+            },
+            warning: {
+                headerClass: 'modal-warning',
+                icon: 'bi-exclamation-triangle-fill',
+                btnClass: 'btn-warning'
+            },
+            info: {
+                headerClass: 'modal-info',
+                icon: 'bi-info-circle-fill',
+                btnClass: 'btn-info'
+            },
+            confirm: {
+                headerClass: 'modal-warning',
+                icon: 'bi-question-circle-fill',
+                btnClass: 'btn-primary'
+            }
+        };
+
+        // Função para forçar limpeza completa de modais
+        function forcarLimpezaCompleta() {
+            // Remove todos os backdrops
+            const backdrops = document.querySelectorAll('.modal-backdrop');
+            backdrops.forEach(backdrop => backdrop.remove());
+
+            // Remove todas as classes relacionadas ao modal do body
+            document.body.classList.remove('modal-open');
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
+
+            // Força reset de todos os modais
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                const instance = bootstrap.Modal.getInstance(modal);
+                if (instance) {
+                    instance.dispose();
+                }
+                modal.classList.remove('show');
+                modal.style.display = 'none';
+                modal.setAttribute('aria-hidden', 'true');
+                modal.removeAttribute('aria-modal');
+                modal.removeAttribute('role');
+            });
+        }
+
+        // Função principal para mostrar modal - VERSÃO COMPLETAMENTE CORRIGIDA
+        function showModal(type, title, message, callback = null, showCancel = false) {
+            // Primeira limpeza preventiva
+            forcarLimpezaCompleta();
+
+            const modal = document.getElementById('modalUniversal');
+            const modalHeader = document.getElementById('modalHeader');
+            const modalIcon = document.getElementById('modalIcon');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalMessage = document.getElementById('modalMessage');
+            const btnPrimary = document.getElementById('modalBtnPrimary');
+            const btnSecondary = document.getElementById('modalBtnSecondary');
+            const closeBtn = document.getElementById('modalCloseBtn');
+
+            const config = modalConfigs[type] || modalConfigs.info;
+
+            // Reset classes
+            modalHeader.className = 'modal-header ' + config.headerClass;
+            modalIcon.className = 'modal-icon bi ' + config.icon;
+            btnPrimary.className = 'btn ' + config.btnClass;
+
+            // Set content
+            modalTitle.textContent = title;
+            modalMessage.textContent = message;
+
+            // Configure buttons
+            if (type === 'confirm' || showCancel) {
+                btnPrimary.textContent = 'Sim';
+                btnSecondary.style.display = 'inline-block';
+                btnSecondary.textContent = 'Não';
+            } else {
+                btnPrimary.textContent = 'OK';
+                btnSecondary.style.display = 'none';
+            }
+
+            // Função para fechar modal de forma segura
+            function fecharModalSeguro(callbackResponse = null) {
+                const modalInstance = bootstrap.Modal.getInstance(modal);
+                if (modalInstance) {
+                    modalInstance.hide();
+                }
+
+                // Event listener para quando o modal terminar de fechar
+                const onModalHidden = () => {
+                    modal.removeEventListener('hidden.bs.modal', onModalHidden);
+
+                    setTimeout(() => {
+                        forcarLimpezaCompleta();
+
+                        if (callback && callbackResponse !== null) {
+                            setTimeout(() => callback(callbackResponse), 50);
+                        }
+                    }, 100);
+                };
+
+                modal.addEventListener('hidden.bs.modal', onModalHidden);
+            }
+
+            // Limpar eventos anteriores (método mais seguro)
+            const newBtnPrimary = btnPrimary.cloneNode(true);
+            const newBtnSecondary = btnSecondary.cloneNode(true);
+            const newCloseBtn = closeBtn.cloneNode(true);
+
+            btnPrimary.parentNode.replaceChild(newBtnPrimary, btnPrimary);
+            btnSecondary.parentNode.replaceChild(newBtnSecondary, btnSecondary);
+            closeBtn.parentNode.replaceChild(newCloseBtn, closeBtn);
+
+            // Atualizar referências após clonagem
+            const finalBtnPrimary = document.getElementById('modalBtnPrimary');
+            const finalBtnSecondary = document.getElementById('modalBtnSecondary');
+            const finalCloseBtn = document.getElementById('modalCloseBtn');
+
+            // Reaplicar estilos após clonagem
+            finalBtnPrimary.className = 'btn ' + config.btnClass;
+            finalBtnPrimary.textContent = (type === 'confirm' || showCancel) ? 'Sim' : 'OK';
+            finalBtnSecondary.style.display = (type === 'confirm' || showCancel) ? 'inline-block' : 'none';
+            finalBtnSecondary.textContent = 'Não';
+
+            // Adicionar eventos aos novos botões
+            if (callback) {
+                finalBtnPrimary.onclick = () => fecharModalSeguro(true);
+                finalBtnSecondary.onclick = () => fecharModalSeguro(false);
+                finalCloseBtn.onclick = () => fecharModalSeguro(false);
+            } else {
+                finalBtnPrimary.onclick = () => fecharModalSeguro();
+                finalCloseBtn.onclick = () => fecharModalSeguro();
+            }
+
+            // Aguardar um frame antes de mostrar o modal
+            setTimeout(() => {
+                const modalInstance = new bootstrap.Modal(modal, {
+                    backdrop: 'static',
+                    keyboard: true
+                });
+                modalInstance.show();
+            }, 10);
+        }
+
+        // Funções de conveniência
+        function showSuccess(title, message, callback = null) {
+            showModal('success', title, message, callback);
+        }
+
+        function showError(title, message, callback = null) {
+            showModal('error', title, message, callback);
+        }
+
+        function showWarning(title, message, callback = null) {
+            showModal('warning', title, message, callback);
+        }
+
+        function showInfo(title, message, callback = null) {
+            showModal('info', title, message, callback);
+        }
+
+        function showConfirm(title, message, callback) {
+            showModal('confirm', title, message, callback, true);
+        }
+
+        // Sobrescrever a função mostrarAlerta do main.js para usar nossos modais
+        function mostrarAlerta(tipo, mensagem, elemento = null) {
+            const tipoModal = {
+                'success': 'success',
+                'danger': 'error',
+                'warning': 'warning',
+                'info': 'info'
+            };
+
+            showModal(tipoModal[tipo] || 'info', tipo.charAt(0).toUpperCase() + tipo.slice(1), mensagem);
+        }
+
+        // Função melhorada para salvar relatório
+        function salvarRelatorio() {
+            const form = document.getElementById('formCriarRelatorio');
+
+            // Validar formulário
+            if (!validarFormulario(form)) {
+                mostrarAlerta('danger', 'Por favor, preencha todos os campos obrigatórios.');
+                return;
+            }
+
+            // Coletar dados do formulário
+            const dadosRelatorio = coletarDadosFormulario(form);
+
+            // Salvar localmente (backup)
+            const numeroRelatorio = document.getElementById('numeroRelatorio').textContent;
+            salvarLocal(`relatorio_${numeroRelatorio}`, dadosRelatorio);
+
+            // Tentar salvar na API
+            salvarNaAPI(dadosRelatorio)
+                .then(() => {
+                    // Primeiro modal de sucesso
+                    showSuccess(
+                        'Sucesso!',
+                        'Relatório salvo com sucesso!',
+                        function () {
+                            // Após fechar completamente o primeiro modal, mostrar o de confirmação
+                            showConfirm(
+                                'Criar Novo Relatório?',
+                                'Deseja criar um novo relatório agora?',
+                                function (confirmed) {
+                                    if (confirmed) {
+                                        limparFormularioEGerarNovoNumero();
+                                    } else {
+                                        window.location.href = 'index.html';
+                                    }
+                                }
+                            );
+                        }
+                    );
+                })
+                .catch(error => {
+                    console.error('Erro ao salvar na API:', error);
+                    showWarning(
+                        'Atenção!',
+                        'Relatório salvo localmente. Será sincronizado quando a conexão for restabelecida.'
+                    );
+                });
+        }
+
+        // Função aprimorada para limpar formulário
+        async function limparFormularioEGerarNovoNumero() {
+            // Garantir limpeza completa antes de continuar
+            forcarLimpezaCompleta();
+
+            const form = document.getElementById('formCriarRelatorio');
+            form.reset();
+
+            // Limpar validações (assumindo que a função existe)
+            if (typeof limparValidacao === 'function') {
+                limparValidacao(form);
+            }
+
+            // Recriar tabelas
+            document.getElementById('equipamentosTableBody').innerHTML = '';
+            document.getElementById('pecasTableBody').innerHTML = '';
+
+            // Reset contadores (assumindo que existem)
+            if (typeof contadorEquipamentos !== 'undefined') contadorEquipamentos = 0;
+            if (typeof contadorPecas !== 'undefined') contadorPecas = 0;
+
+            // Recriar linhas iniciais (assumindo que as funções existem)
+            if (typeof adicionarLinhasIniciaisEquipamentos === 'function') {
+                adicionarLinhasIniciaisEquipamentos();
+            }
+            if (typeof adicionarLinhasIniciaisPecas === 'function') {
+                adicionarLinhasIniciaisPecas();
+            }
+
+            // Definir data atual
+            const hoje = new Date().toISOString().split('T')[0];
+            const campoData = form.querySelector('input[name="dataServico"]');
+            if (campoData) {
+                campoData.value = hoje;
+            }
+
+            // Gerar novo número do relatório
+            try {
+                if (typeof gerarProximoNumero === 'function') {
+                    const novoNumero = await gerarProximoNumero();
+                    const elementoNumero = document.getElementById('numeroRelatorio');
+                    if (elementoNumero) {
+                        elementoNumero.textContent = novoNumero;
+                    }
+                }
+
+                // Feedback de sucesso
+                setTimeout(() => {
+                    showInfo('Novo Relatório', 'Novo relatório preparado com sucesso!');
+                }, 200);
+
+            } catch (error) {
+                console.error('Erro ao gerar novo número:', error);
+                showError('Erro', 'Erro ao gerar novo número do relatório.');
+            }
+        }
+
+        // Listener para limpeza preventiva quando a página carrega
+        document.addEventListener('DOMContentLoaded', function () {
+            // Limpeza inicial
+            forcarLimpezaCompleta();
+
+            // Monitor para detectar backdrops órfãos (debug)
+            setInterval(() => {
+                const backdrops = document.querySelectorAll('.modal-backdrop');
+                const openModals = document.querySelectorAll('.modal.show');
+
+                if (backdrops.length > 0 && openModals.length === 0) {
+                    console.warn('🚨 Backdrop órfão detectado - executando limpeza automática');
+                    forcarLimpezaCompleta();
+                }
+            }, 3000);
+        });
+
+        // Listener para ESC key como fallback
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                const openModals = document.querySelectorAll('.modal.show');
+                if (openModals.length === 0) {
+                    // Se não há modais visíveis mas pode haver backdrop órfão
+                    forcarLimpezaCompleta();
+                }
+            }
+        });
+    </script>
 </body>
+
 </html>

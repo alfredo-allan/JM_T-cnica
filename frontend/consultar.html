@@ -1,13 +1,101 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Consultar Relatórios - Sistema JM Técnica</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="assets/css/styles.css" rel="stylesheet">
+    <style>
+        .service-header {
+            background: linear-gradient(135deg, #198754 0%, #157347 100%);
+            color: white;
+            padding: 2rem;
+            margin: -15px -15px 30px -15px;
+            border-radius: 0.375rem 0.375rem 0 0;
+        }
+
+        .modal-header.modal-success {
+            background: linear-gradient(135deg, #198754 0%, #157347 100%);
+            color: white;
+            border-bottom: none;
+        }
+
+        .modal-header.modal-error {
+            background: linear-gradient(135deg, #dc3545 0%, #bb2d3b 100%);
+            color: white;
+            border-bottom: none;
+        }
+
+        .modal-header.modal-warning {
+            background: linear-gradient(135deg, #fd7e14 0%, #e55d0f 100%);
+            color: white;
+            border-bottom: none;
+        }
+
+        .modal-header.modal-info {
+            background: linear-gradient(135deg, #0dcaf0 0%, #0aa2c0 100%);
+            color: white;
+            border-bottom: none;
+        }
+
+        .modal-icon {
+            font-size: 1.5rem;
+            margin-right: 0.5rem;
+        }
+
+        .modal-body {
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .modal-message {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        .relatorio-card {
+            border-left: 4px solid #198754;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .relatorio-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .badge-status {
+            font-size: 0.8rem;
+            padding: 0.5rem 0.8rem;
+        }
+
+        /* Estilos específicos para o modal de visualização - ADICIONADOS */
+        #modalVisualizacao .modal-body {
+            text-align: left !important;
+            padding: 1.5rem;
+        }
+
+        #modalVisualizacao .row {
+            margin-bottom: 1rem;
+        }
+
+        #modalVisualizacao .table {
+            margin-bottom: 0;
+        }
+
+        #modalVisualizacao .badge {
+            font-size: 0.75rem;
+        }
+
+        #modalVisualizacao .bg-light {
+            background-color: #f8f9fa !important;
+            border-radius: 0.375rem;
+        }
+    </style>
 </head>
+
 <body>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-success">
@@ -111,7 +199,8 @@
                         <label class="form-label">Tipo de Serviço</label>
                         <div class="d-flex gap-3 flex-wrap">
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="filtroPreventiva" value="preventiva">
+                                <input class="form-check-input" type="checkbox" id="filtroPreventiva"
+                                    value="preventiva">
                                 <label class="form-check-label" for="filtroPreventiva">PREVENTIVA</label>
                             </div>
                             <div class="form-check">
@@ -150,8 +239,60 @@
         </div>
     </div>
 
+    <!-- Modal de Visualização Rápida - CORRIGIDO PARA FICAR IGUAL AO LISTAR -->
+    <div class="modal fade" id="modalVisualizacao" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-eye me-2"></i>Visualização Rápida - Relatório N° <span
+                            id="numeroModalVisualizar"></span>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="conteudoModalVisualizar">
+                    <!-- Conteúdo será carregado via JavaScript -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-primary" onclick="editarRelatorio()">
+                        <i class="bi bi-pencil me-1"></i>Editar
+                    </button>
+                    <button type="button" class="btn btn-success" onclick="imprimirRelatorio()">
+                        <i class="bi bi-printer me-1"></i>Imprimir
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Universal -->
+    <div class="modal fade" id="modalUniversal" tabindex="-1" aria-labelledby="modalUniversalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header" id="modalHeader">
+                    <h5 class="modal-title d-flex align-items-center" id="modalUniversalLabel">
+                        <i class="modal-icon" id="modalIcon"></i>
+                        <span id="modalTitle"></span>
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="modal-message" id="modalMessage"></div>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn" id="modalBtnPrimary" data-bs-dismiss="modal">OK</button>
+                    <button type="button" class="btn btn-outline-secondary" id="modalBtnSecondary"
+                        data-bs-dismiss="modal" style="display: none;">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="assets/js/main.js"></script>
     <script src="assets/js/consultar.js"></script>
 </body>
+
 </html>
